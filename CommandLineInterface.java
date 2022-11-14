@@ -7,18 +7,18 @@ public class CommandLineInterface implements UserInterface {
 
 
     private final Scanner scanner;
-    private final CipherEncoder cipherEncoder;
-
     public CommandLineInterface() {
         this.scanner = new Scanner(System.in);
-        this.cipherEncoder = new ChuckNorrisEncoder();
     }
 
     @Override
     public void run() {
-        System.out.println("Input string:");
+        System.out.println("Input encoded string:");
         String input = scanner.nextLine();
-        String result = cipherEncoder.encode(input);
+
+        ChuckNorrisDecoder chuckNorrisDecoder = new ChuckNorrisDecoder();
+
+        String result = chuckNorrisDecoder.decode(input);
         System.out.println();
         System.out.println("The result:");
         System.out.println(result);
