@@ -2,12 +2,25 @@ package chucknorris;
 
 
 import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ChuckNorrisDecoder {
-    public String decode(String input) {
+    public String decode(String input) throws ChuckNorrisDecoderException {
+
+        if (input.chars().filter(ch->(ch=='0'||ch==' ')).count() != input.length()) {
+            throw new EncodedMessageIncludesCharactersOtherThanZeroOrSpacesException();
+        }
+        if (input.split(" ").length % 2 != 0) {
+            throw new NumberOfBlocksIsOddException();
+        }
+
+        for (int i = 0; i < input.split(" ").length; i += 2) {
+            if ("0".equals(input.split(" ")[i]) || "00".equals(input.split(" ")[i])) {
+                continue;
+            }
+            throw new FirstBlockOfEachSequenceIsNotZeroOrSpace();
+        }
 
         String decodedInput = Pattern.compile("0{1,2} 0+")
                 .matcher(input)
@@ -19,7 +32,12 @@ public class ChuckNorrisDecoder {
                     return oneOrZero.repeat(strings[1].length());
                 })
                 .collect(Collectors.joining());
-        return Pattern.compile("[10]{7}")
+
+        if (decodedInput.length() % 7 != 0) {
+            throw new LengthOfDecodedBinaryStringIsNotMultipleOfSevenException();
+        }
+
+        return Pattern.compile("[01]{7}")
                 .matcher(decodedInput)
                 .results()
                 .map(MatchResult::group)
@@ -29,5 +47,21 @@ public class ChuckNorrisDecoder {
                         StringBuilder::append)
                 .toString();
 
+    }
+
+    public class ChuckNorrisDecoderException extends Exception{
+
+    }
+
+    private class LengthOfDecodedBinaryStringIsNotMultipleOfSevenException extends ChuckNorrisDecoderException {
+
+    }
+    private class NumberOfBlocksIsOddException extends ChuckNorrisDecoderException {
+    }
+
+    private class EncodedMessageIncludesCharactersOtherThanZeroOrSpacesException extends ChuckNorrisDecoderException {
+    }
+
+    private class FirstBlockOfEachSequenceIsNotZeroOrSpace extends ChuckNorrisDecoderException {
     }
 }

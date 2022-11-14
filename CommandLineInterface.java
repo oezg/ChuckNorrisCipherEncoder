@@ -1,6 +1,6 @@
 package chucknorris;
 
-import java.util.List;
+
 import java.util.Scanner;
 
 public class CommandLineInterface implements UserInterface {
@@ -13,14 +13,36 @@ public class CommandLineInterface implements UserInterface {
 
     @Override
     public void run() {
-        System.out.println("Input encoded string:");
-        String input = scanner.nextLine();
-
-        ChuckNorrisDecoder chuckNorrisDecoder = new ChuckNorrisDecoder();
-
-        String result = chuckNorrisDecoder.decode(input);
-        System.out.println();
-        System.out.println("The result:");
-        System.out.println(result);
+        ChuckNorrisEncoder encoder = new ChuckNorrisEncoder();
+        ChuckNorrisDecoder decoder = new ChuckNorrisDecoder();
+        String input;
+        String code;
+        while (true) {
+            System.out.println("Please input operation (encode/decode/exit):");
+            String operation = scanner.nextLine();
+            if ("encode".equalsIgnoreCase(operation)) {
+                System.out.println("Input string:");
+                input = scanner.nextLine();
+                code = encoder.encode(input);
+                System.out.println("Encoded string:");
+                System.out.println(code);
+            } else if ("decode".equalsIgnoreCase(operation)) {
+                System.out.println("Input encoded string");
+                input = scanner.nextLine();
+                try {
+                    code = decoder.decode(input);
+                    System.out.println("Decoded string:");
+                    System.out.println(code);
+                } catch (ChuckNorrisDecoder.ChuckNorrisDecoderException e) {
+                    System.out.println("Encoded string is not valid.");
+                }
+            } else if ("exit".equalsIgnoreCase(operation)) {
+                break;
+            } else {
+                System.out.printf("There is no '%s' operation\n", operation);
+            }
+            System.out.println();
+        }
+        System.out.println("Bye!");
     }
 }
